@@ -9,7 +9,7 @@
 	url = git://github.com/openembedded/meta-oe.git
 [submodule "meta-slugos"]
 	path = meta-slugos
-	url = git://github.com:kraj/meta-slugos.git
+	url = git://github.com/kraj/meta-slugos.git
 [submodule "meta-nslu2"]
 	path = meta-nslu2
-	url = git://github.com:kraj/meta-nslu2.git
+	url = git://github.com/kraj/meta-nslu2.git
