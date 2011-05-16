@@ -1,0 +1,15 @@
+[submodule "bitbake"]
+	path = bitbake
+	url = git://git.openembedded.org/bitbake
+[submodule "openembedded-core"]
+	path = openembedded-core
+	url = git://git.openembedded.org/openembedded-core
+[submodule "meta-openembedded"]
+	path = meta-openembedded
+	url = git://git.openembedded.org/meta-openembedded
+[submodule "meta-slugos"]
+	path = meta-slugos
+	url = git@github.com:kraj/meta-slugos.git
+[submodule "meta-nslu2"]
+	path = meta-nslu2
+	url = git@github.com:kraj/meta-nslu2.git
