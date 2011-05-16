@@ -32,7 +32,7 @@ DEFAULT_MACHINE = nslu2be
 
 BITBAKE = source ./setup-env && bitbake
 
-all: setup slugos-image
+all: setup-slugos slugos-image
 
 check-eglibc-setup:
 	. ./setup-env && \
