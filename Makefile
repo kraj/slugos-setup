@@ -63,6 +63,7 @@ setup-slugos: setup
 setup-env: 
 	echo 'export BBFETCH2=True' > setup-env
 	echo 'export OEDIR="'`pwd`'"' >> setup-env
+	echo 'export BUILDDIR="$${OEDIR}/build"' >> setup-env
 	echo 'export PYTHONPATH="$${OEDIR}/bitbake/lib"' >> setup-env
 	echo 'export PATH="$${OEDIR}/openembedded-core/scripts:$${OEDIR}/bitbake/bin:$${PATH}"' >> setup-env
 	echo 'export MACHINE=${DEFAULT_MACHINE}' >> setup-env
