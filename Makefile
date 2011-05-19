@@ -130,7 +130,7 @@ print-setup:
 
 .PHONY: update
 update:
-	git pull
+	git pull --rebase
 	git submodule foreach --recursive git submodule update
 
 .PHONY: bitbake-%
