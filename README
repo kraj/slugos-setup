@@ -1,0 +1,21 @@
+This is master layer for SlugOS. It uses git submodules
+to denote the various layers that are needed to build
+SlugOS.
+
+Generally the Makefile would be used to initialize
+the submodules needed
+
+layers currently being used:
+
+bitbake: master
+openemebedded-core: master
+meta-openembedded: master
+meta-nslu2: master
+meta-slugos: master
+
+To get started, Type: make setup && make slugos-image
+
+Send pull requests to openembedded-devel@lists.openembedded.org
+
+Layer maintainers: Khem Raj <raj.khem@gmail.com>
+                   Mike Westerhof <mike@mwester.net>
