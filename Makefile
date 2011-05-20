@@ -25,11 +25,9 @@
 # note, the existence of _REV means we ignore _BRANCH
 
 DEFAULT_DISTRO = slugos
-# the following is required because ti-dsplink can't have a
-# '.' in the build path
-DEFAULT_DISTRO_BUILD_DIR = slugos
 DEFAULT_MACHINE = nslu2be
-
+# possible values are uclibc, eglibc or glibc
+DEFAULT_LIBC = eglibc
 BITBAKE = source ./setup-env && bitbake
 
 all: setup-slugos slugos-image
@@ -38,17 +36,17 @@ check-eglibc-setup:
 	. ./setup-env && \
 	(if grep uclibc setup-env; then \
 		echo "switching to eglibc ..."; \
-		make setup-eglibc; \
+		make setup-libc-eglibc; \
 	fi)
 
 check-uclibc-setup:
 	. ./setup-env && \
 	(if ! grep uclibc setup-env; then \
 		echo "switching to uclibc ..."; \
-		make setup-uclibc; \
+		make setup-libc-uclibc; \
 	fi)
 
-setup:  setup-env setup-bblayers setup-site setup-auto
+setup:  setup-env setup-bblayers setup-site
 	[ -e downloads ] || mkdir downloads
 	@[ -e bitbake/bin/bitbake ] || echo "NOTE: must initialize git submodules: make setup-slugos"
 
@@ -67,6 +65,7 @@ setup-env:
 	echo 'export PYTHONPATH="$${OEDIR}/bitbake/lib"' >> setup-env
 	echo 'export PATH="$${OEDIR}/openembedded-core/scripts:$${OEDIR}/bitbake/bin:$${PATH}"' >> setup-env
 	echo 'export MACHINE=${DEFAULT_MACHINE}' >> setup-env
+	echo 'export TCLIBC=${DEFAULT_LIBC}' >> setup-env
 	echo 'export BB_ENV_EXTRAWHITE="MACHINE DISTRO TCLIBC TCMODE OEDIR OE_GIT_BRANCH BBPATH TOPDIR http_proxy ftp_proxy"' >> setup-env
 setup-bblayers: conf/bblayers.conf
 conf/bblayers.conf:
@@ -100,29 +99,23 @@ conf/site.conf:
 	echo '# Go through the Firewall' >> conf/site.conf
 	echo '#HTTP_PROXY        = "http://${PROXYHOST}:${PROXYPORT}/"' >> conf/site.conf
 
-setup-auto: conf/auto.conf
-conf/auto.conf:
-	echo 'MACHINE ?= "${MACHINE}"'> conf/auto.conf
-
 setup-default-machine:
-	. ./setup-env && ([ -e $${TOPDIR}/conf/auto.conf ] || make setup-machine-${DEFAULT_MACHINE} )
+	. ./setup-env && make setup-machine-${DEFAULT_MACHINE}
+
+setup-default-libc:
+	. ./setup-env && make setup-libc-${DEFAULT_LIBC}
 
 .PHONY: setup-machine-%
 setup-machine-%:
 	sed -i -e 's/^export MACHINE.*/export MACHINE=\"$*\"/' setup-env
 
-.PHONY: setup-machine-%
+.PHONY: setup-distro-%
 setup-distro-%:
 	. ./setup-env && sed -i -e 's/export TOPDIR.*/export TOPDIR=\"$${OEDIR}\/build\/$*\"/' setup-env
 
-.PHONY: setup-uclibc
-setup-uclibc:
-	sed -i -e 's/^TCLIBC.*//' setup-env && \:
-	echo 'export TCLIBC="uclibc"' >> setup-env
-
-.PHONY: setup-eglibc
-setup-eglibc:
-	sed -i -e 's/^export TCLIBC.*//' setup-env
+.PHONY: setup-libc-%
+setup-libc-%:
+	sed -i -e 's/^export TCLIBC.*/export TCLIBC=\"$*\"/' setup-env
 
 .PHONY: print-setup
 print-setup:
@@ -148,7 +141,7 @@ devshell-%: setup-env
 # run the following target if you want to clean the OE tmp directory where things are built
 .PHONY: clean
 clean: setup-env
-	. ./setup-env && pushd $${TOPDIR} && rm -rf tmp && popd
+	. ./setup-env && pushd $${TOPDIR} && rm -rf build/tmp-slugos-$${TCLIBC} && popd
 
 # run the following target if you want to completely reset your build and download
 # new OE/bitbake sources
@@ -159,16 +152,18 @@ clobber: clean
 	rm -rf meta-openembedded
 	rm -rf meta-slugos
 	rm -rf meta-nslu2
-	rm setup-env
+	rm -rf build/*
+	rm -rf setup-env conf/bblayers.conf conf/auto.conf conf/site.conf
 
 PWD := $(shell pwd)
 MACHINE := $(shell source ./setup-env && echo $${MACHINE})
-DEPLOY := ${PWD}/build/${DEFAULT_DISTRO_BUILD_DIR}/tmp/deploy/glibc/images/${MACHINE}
+LIBC := $(shell source ./setup-env && echo $${TCLIBC})
+DEPLOY := ${PWD}/build/tmp-slugos-${LIBC}/deploy/images
 
 nslu2-install-boot:
 	echo MACHINE = ${MACHINE}
 	rm -rf /media/boot/*
-	cp ${DEPLOY}/uImage-${MACHINE}.bin /media/boot/zImage
+	cp ${DEPLOY}/zImage-${MACHINE}.bin /media/boot/zImage
 
 nslu-install-%-rootfs:
 	rm -rf /media/*
