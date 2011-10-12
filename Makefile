@@ -71,7 +71,7 @@ setup-bblayers: conf/bblayers.conf
 conf/bblayers.conf:
 	echo '# LAYER_CONF_VERSION is increased each time build/conf/bblayers.conf' > conf/bblayers.conf
 	echo '# changes incompatibly' >> conf/bblayers.conf
-	echo 'LCONF_VERSION = "1"' >> conf/bblayers.conf
+	echo 'LCONF_VERSION = "4"' >> conf/bblayers.conf
 	echo 'TOPDIR := "$${@os.path.dirname(os.path.dirname(d.getVar("FILE", True)))}"' >> conf/bblayers.conf
 	echo 'BBPATH = "$${TOPDIR}"' >> conf/bblayers.conf
 	echo 'BBFILES = ""' >> conf/bblayers.conf
@@ -89,7 +89,10 @@ conf/bblayers.conf:
 
 setup-site: conf/site.conf
 conf/site.conf:
-	echo '# Where to store sources' > conf/site.conf
+	echo 'SITE_CONF_VERSION is increased each time build/conf/site.conf' > conf/site.conf
+	echo '# changes incompatibly' >> conf/site.conf
+	echo 'SCONF_VERSION = "1"' >> conf/site.conf
+	echo '# Where to store sources' >> conf/site.conf
 	echo 'DL_DIR = "$${OEDIR}/downloads"' >> conf/site.conf
 	echo '# Where to save shared state' >> conf/site.conf
 	echo 'SSTATE_DIR = "$${OEDIR}/build/sstate-cache"' >> conf/site.conf
