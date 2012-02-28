@@ -28,7 +28,7 @@ DEFAULT_DISTRO = slugos
 DEFAULT_MACHINE = nslu2be
 # possible values are uclibc, eglibc or glibc
 DEFAULT_LIBC = eglibc
-BITBAKE = source ./setup-env && bitbake
+BITBAKE = . ./setup-env && bitbake
 
 all: setup-slugos slugos-image
 
@@ -144,7 +144,7 @@ devshell-%: setup-env
 # run the following target if you want to clean the OE tmp directory where things are built
 .PHONY: clean
 clean: setup-env
-	. ./setup-env && pushd $${TOPDIR} && rm -rf build/tmp-slugos-$${TCLIBC} && popd
+	. ./setup-env && odir=$${TOPDIR} && rm -rf build/tmp-slugos-$${TCLIBC} && cd $odir
 
 # run the following target if you want to completely reset your build and download
 # new OE/bitbake sources
@@ -159,8 +159,8 @@ clobber: clean
 	rm -rf setup-env conf/bblayers.conf conf/auto.conf conf/site.conf
 
 PWD := $(shell pwd)
-MACHINE := $(shell source ./setup-env && echo $${MACHINE})
-LIBC := $(shell source ./setup-env && echo $${TCLIBC})
+MACHINE := $(shell . ./setup-env && echo $${MACHINE})
+LIBC := $(shell . ./setup-env && echo $${TCLIBC})
 DEPLOY := ${PWD}/build/tmp-slugos-${LIBC}/deploy/images
 
 nslu2-install-boot:
