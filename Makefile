@@ -30,7 +30,7 @@ DEFAULT_MACHINE = nslu2be
 DEFAULT_LIBC = eglibc
 BITBAKE = . ./setup-env && bitbake
 
-all: setup-slugos slugos-image
+all: setup slugos-image
 
 check-eglibc-setup:
 	. ./setup-env && \
@@ -46,7 +46,7 @@ check-uclibc-setup:
 		make setup-libc-uclibc; \
 	fi)
 
-setup:  setup-env setup-bblayers setup-site
+setup:  setup-env setup-bblayers setup-site setup-slugos
 	[ -e downloads ] || mkdir downloads
 	@[ -e bitbake/bin/bitbake ] || echo "NOTE: must initialize git submodules: make setup-slugos"
 
@@ -71,7 +71,7 @@ setup-bblayers: conf/bblayers.conf
 conf/bblayers.conf:
 	echo '# LAYER_CONF_VERSION is increased each time build/conf/bblayers.conf' > conf/bblayers.conf
 	echo '# changes incompatibly' >> conf/bblayers.conf
-	echo 'LCONF_VERSION = "6"' >> conf/bblayers.conf
+	echo 'LCONF_VERSION = "5"' >> conf/bblayers.conf
 	echo 'TOPDIR := "$${@os.path.dirname(os.path.dirname(d.getVar("FILE", True)))}"' >> conf/bblayers.conf
 	echo 'BBPATH = "$${TOPDIR}"' >> conf/bblayers.conf
 	echo 'BBFILES = ""' >> conf/bblayers.conf
@@ -89,9 +89,10 @@ conf/bblayers.conf:
 
 setup-site: conf/site.conf
 conf/site.conf:
-	echo 'SITE_CONF_VERSION is increased each time build/conf/site.conf' > conf/site.conf
+	echo '# SITE_CONF_VERSION is increased each time build/conf/site.conf' > conf/site.conf
 	echo '# changes incompatibly' >> conf/site.conf
 	echo 'SCONF_VERSION = "1"' >> conf/site.conf
+	echo 'SITE_CONF_VERSION = "1"' >> conf/site.conf
 	echo '# Where to store sources' >> conf/site.conf
 	echo 'DL_DIR = "$${OEDIR}/downloads"' >> conf/site.conf
 	echo '# Where to save shared state' >> conf/site.conf
@@ -144,7 +145,7 @@ devshell-%: setup-env
 # run the following target if you want to clean the OE tmp directory where things are built
 .PHONY: clean
 clean: setup-env
-	. ./setup-env && odir=$${TOPDIR} && rm -rf build/tmp-slugos-$${TCLIBC} && cd $odir
+	. ./setup-env && odir=$${OEDIR} && rm -rf build/tmp-slugos-$${TCLIBC} && cd ${odir}
 
 # run the following target if you want to completely reset your build and download
 # new OE/bitbake sources
@@ -156,6 +157,7 @@ clobber: clean
 	rm -rf meta-slugos
 	rm -rf meta-nslu2
 	rm -rf build/*
+	rm -rf cache
 	rm -rf setup-env conf/bblayers.conf conf/auto.conf conf/site.conf
 
 PWD := $(shell pwd)
