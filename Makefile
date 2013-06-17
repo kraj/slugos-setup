@@ -71,7 +71,7 @@ setup-bblayers: conf/bblayers.conf
 conf/bblayers.conf:
 	echo '# LAYER_CONF_VERSION is increased each time build/conf/bblayers.conf' > conf/bblayers.conf
 	echo '# changes incompatibly' >> conf/bblayers.conf
-	echo 'LCONF_VERSION = "4"' >> conf/bblayers.conf
+	echo 'LCONF_VERSION = "6"' >> conf/bblayers.conf
 	echo 'TOPDIR := "$${@os.path.dirname(os.path.dirname(d.getVar("FILE", True)))}"' >> conf/bblayers.conf
 	echo 'BBPATH = "$${TOPDIR}"' >> conf/bblayers.conf
 	echo 'BBFILES = ""' >> conf/bblayers.conf
